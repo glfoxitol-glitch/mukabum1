@@ -93,6 +93,19 @@ Para clientes que vendem produtos (exemplo: loja de eletrônicos). O que **já e
 | **Entrega agendada** (cliente escolhe dia/horário de entrega e endereço) | ⚠️ quase tudo existe, ver abaixo |
 | Botão "Comprar pelo WhatsApp" em cada produto do site | ✅ pronto no `site-modelo`: abre o chat (modo canal) ou o WhatsApp com o produto escrito |
 
+#### Aviso de venda para o lojista (sem ele olhar o computador)
+O CRM roda **24 horas no servidor (VPS)**, não no computador do lojista. Os avisos que **já existem**:
+- **Notificação no celular** (o CRM instalado como app pela tela inicial): negócio ganho, novo lead
+  atribuído, nova mensagem (`lib/notifications/`, tipo `lead_won`).
+- **Mensagem no WhatsApp da equipe** pela automação "quando o negócio for ganho → avisar a equipe"
+  (`notify_team`), com os dados do cliente. O número da equipe é interno e não vira conversa de cliente.
+- **E-mail** pela ação de automação `send_email`.
+
+**O que falta para o fluxo da loja:** quando a IA fechar o pedido (Fase 2B), ela precisa **mover o
+lead para "Pedido confirmado" / marcar como ganho**, com produto, valor, endereço e horário de
+entrega. É essa transição que dispara os avisos acima. Sugestão a construir: um **resumo do dia**
+para o lojista ("5 vendas hoje, 3 entregas amanhã").
+
 #### Entrega agendada: horário ocupado não é oferecido de novo
 A agenda do CRM já resolve o conflito que você descreveu, em três camadas:
 
