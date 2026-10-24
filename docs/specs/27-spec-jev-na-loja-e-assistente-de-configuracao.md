@@ -135,7 +135,7 @@ tela, com o país do processamento, para o seu cliente decidir com informação 
 |---|---|---|
 | 1 | Haiku 5.5 no catálogo + custo | `pnpm test:db` + teste de custo |
 | 2 | ✅ Modelo de roteador `loja_com_entrega` (a intenção da loja, sobre a tarefa `roteador` que já existe) | 11 testes + sabotagem; falta instalá-lo pelo assistente (fatia 5) e medir a concordância numa empresa real |
-| 3 | ⚠️ `categoria_do_catalogo`: pergunta pronta e testada (18 casos, 5 ramos). Falta registrá-la em `TAREFAS` (estados, aceite, textos, cartão) e o consumidor antes de `crm_search_products`. `confirmacao_do_cliente`: a fazer | unit + spec Playwright pelo agente (prova em par) |
+| 3 | ⚠️ Regras prontas e testadas, sem banco: `categoria_do_catalogo` (`lib/ai/decisao/categoria-do-catalogo.ts`, 18 casos, 5 ramos) e `confirmacao_do_cliente` (`lib/ai/decisao/confirmacao-do-cliente.ts`, 39 casos: regra de aceite curto em cascata, aceite com condição ou pergunta é não, proposta vale 2 h, corte 0,9, ausência do Jev nunca é sim). **Não registradas em `TAREFAS_DO_JEV` de propósito:** tarefa no painel sem chamador é "botão que não controla nada" (`tests/unit/pontos-de-ia-decisao-rapida.test.ts`). Registro + chamador (busca de produtos; turno após proposta) entram juntos, na sessão com banco | unit + spec Playwright pelo agente (prova em par) |
 | 4 | Chave do Jev da instalação | tripla + `test:db` + tela |
 | 5 | Assistente de configuração (rascunhos) | spec Playwright: descreve o negócio → rascunhos → publica |
 | 6 | Medição Haiku 5.5 × DeepSeek | relatório com as 4 réguas da §5 |
