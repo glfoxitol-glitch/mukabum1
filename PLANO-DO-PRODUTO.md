@@ -89,7 +89,7 @@ Para clientes que vendem produtos (exemplo: loja de eletrônicos). O que **já e
 | Agenda com horários livres, marcar, remarcar, confirmar e lembrete (`crm_find_free_slots`, `crm_book_appointment`…) | ✅ já existe |
 | Integração com Nuvemshop (produtos e pedidos de loja já pronta) | ✅ já existe |
 | **Vitrine no site** lendo o catálogo do CRM (produto cadastrado no CRM aparece no site sozinho) | ⚠️ metade: a vitrine do `site-modelo` está pronta (`vitrine.js`, categorias, busca, esgotado) e lê `catalogo.url`; falta a rota pública do CRM que devolve o catálogo |
-| **IA cria o pedido** na conversa (carrinho → pedido → link de pagamento) | ❌ falta: hoje a IA só *lista* pedidos (`crm_list_contact_orders`) |
+| **IA cria o pedido** na conversa (carrinho → pedido → link de pagamento) | ⚠️ regras prontas e testadas em `lib/pedidos/` (preço, estoque, desconto, aviso); falta a ferramenta `crm_create_order` e a gravação (spec 28) |
 | **Entrega agendada** (cliente escolhe dia/horário de entrega e endereço) | ⚠️ quase tudo existe, ver abaixo |
 | Botão "Comprar pelo WhatsApp" em cada produto do site | ✅ pronto no `site-modelo`: abre o chat (modo canal) ou o WhatsApp com o produto escrito |
 
