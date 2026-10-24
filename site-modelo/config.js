@@ -35,6 +35,10 @@ window.SITE = {
     boasVindas: "Olá! 👋 Sou o assistente da Clínica Sorriso. Como posso ajudar?",
     botaoFalar: "Agendar ou falar com a equipe",
     abrirSozinhoEm: 0,                   // segundos para abrir sozinho (0 = não abre)
+    // Modo canal (Fase 2): preencha os dois para o chat conversar direto com o CRM.
+    // Vazios = o chat responde o FAQ e leva ao WhatsApp (Fase 1).
+    crmUrl: "",                          // ex.: "https://app.suamarca.com.br"
+    chave: "",                           // a chave do widget, copiada de Conexões › Chat do site
   },
 
   hero: {

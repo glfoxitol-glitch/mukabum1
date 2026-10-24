@@ -52,4 +52,12 @@ As opções ficam em `chat` no `config.js`: título, status, boas-vindas, texto 
 
 Qualquer botão com `data-abrir-chat` abre o chat, e também é possível abrir pelo JavaScript com `ChatDoSite.abrir()`.
 
-**Por enquanto**, a conversa com a equipe continua no WhatsApp. Na Fase 2 do plano (`PLANO-DO-PRODUTO.md`), o chat passa a conversar com a IA do CRM sem sair do site.
+### Modo canal (Fase 2)
+
+Com `chat.crmUrl` e `chat.chave` preenchidos no `config.js`, o chat:
+
+1. pede **nome**, **WhatsApp (obrigatório)** e a **autorização de contato** antes de começar;
+2. conversa direto com o CRM, e a resposta da IA aparece dentro do site;
+3. se o CRM não responder ou um limite for atingido, oferece continuar pelo WhatsApp.
+
+O formulário e a conversa já estão prontos e testados contra um CRM simulado. As rotas do CRM (`/api/v1/webchat/...`) ainda vão ser construídas (ver `docs/specs/26-spec-webchat-nativo.md`). Até lá, deixe os dois campos vazios e o chat funciona no modo da Fase 1.

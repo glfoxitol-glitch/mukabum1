@@ -102,6 +102,23 @@ e **nenhuma** confia no body para saber a organização.
 
 Respostas em `{ data }` / `{ error }` (`ok()` / `fail()`), com `X-RateLimit-*` e `Retry-After`.
 
+**Contrato que o widget já consome** (`site-modelo/chat.js`, testado contra um CRM simulado):
+
+| Chamada | `data` devolvido |
+|---|---|
+| `POST /mensagens` (primeira, sem token) | `{ visitante_token, mensagem: { id } }`. O token é entregue **uma vez** |
+| `POST /mensagens` (seguintes, `Authorization: Bearer`) | `{ mensagem: { id } }` |
+| `GET /mensagens?depois=` | `{ mensagens: [{ id, direcao: "inbound" \| "outbound", texto, criada_em }], cursor }` |
+
+| Erro | O widget faz |
+|---|---|
+| `401` | Esquece o token e pede o WhatsApp de novo |
+| `422 whatsapp_invalido` | Reabre o formulário |
+| `429` (qualquer teto) | Oferece continuar pelo WhatsApp |
+| Rede ou `5xx` | Oferece continuar pelo WhatsApp |
+
+As regras puras já estão em `lib/channels/webchat/` (entrada, credenciais, origem, tetos), com testes.
+
 **Por que polling e não Realtime direto:** o Realtime do Supabase exige a anon key e uma policy
 para o visitante. Abrir RLS para um papel anônimo em `messages` contraria o modelo inteiro de
 tenancy. O polling passa pela rota, que filtra a organização e o visitante no servidor. Se o volume

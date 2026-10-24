@@ -79,6 +79,29 @@ O chat deixa de levar ao WhatsApp e passa a conversar dentro do site, com a **IA
 
 Estimativa: 2 a 4 semanas de desenvolvimento, porque toca banco, segurança, inbox e IA.
 
+### Fase 2B: loja no site + vendas com entrega agendada
+Para clientes que vendem produtos (exemplo: loja de eletrônicos). O que **já existe** no CRM e o que falta:
+
+| Peça | Situação |
+|---|---|
+| Catálogo de produtos com fotos, preço, estoque e importação por planilha (`catalog_products`, tela `/app/products`) | ✅ já existe |
+| IA busca produtos e manda fotos no WhatsApp (`crm_search_products`, `fotos-do-produto`) | ✅ já existe |
+| Agenda com horários livres, marcar, remarcar, confirmar e lembrete (`crm_find_free_slots`, `crm_book_appointment`…) | ✅ já existe |
+| Integração com Nuvemshop (produtos e pedidos de loja já pronta) | ✅ já existe |
+| **Vitrine no site** lendo o catálogo do CRM (produto cadastrado no CRM aparece no site sozinho) | ❌ falta: rota pública de catálogo + seção de produtos no `site-modelo` |
+| **IA cria o pedido** na conversa (carrinho → pedido → link de pagamento) | ❌ falta: hoje a IA só *lista* pedidos (`crm_list_contact_orders`) |
+| **Entrega agendada** (cliente escolhe dia/horário de entrega e endereço) | ⚠️ parcial: reusar a agenda com um tipo "Entrega" + endereço do cliente |
+| Botão "Comprar pelo WhatsApp" em cada produto do site | ❌ falta: abre o chat/WhatsApp já com o produto escolhido |
+
+Fluxo alvo:
+```
+Cliente no WhatsApp: "quero ver celulares até R$ 1.500"
+  → IA busca no catálogo (o mesmo que aparece no site) e manda fotos + preços
+  → cliente escolhe → IA monta o pedido e envia o link de pagamento
+  → IA oferece horários de entrega livres → cliente escolhe → entrega agendada
+  → lembrete no dia + pedido no funil para a equipe separar e entregar
+```
+
 ### Fase 3: editor de site com IA dentro do CRM
 - [ ] Tela "Meu site" no painel da empresa
 - [ ] Assistente: o cliente descreve o negócio e a IA gera o `config.js` (textos, serviços, FAQ, cores)

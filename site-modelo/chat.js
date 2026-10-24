@@ -6,8 +6,11 @@
  * pede nome + mensagem e continua a conversa no WhatsApp já com o contexto.
  * A conversa chega no CRM pelo número conectado, onde a IA assume.
  *
- * Fase 2 (planejada): as mensagens passam a ir direto para o CRM por um canal
- * "webchat" nativo, e a resposta da IA aparece aqui dentro, sem abrir o WhatsApp.
+ * Fase 2 (modo canal): com `chat.crmUrl` e `chat.chave` no config.js, o chat
+ * pede o WhatsApp do visitante (com autorização de contato) antes de começar e
+ * conversa direto com o CRM pelo canal "webchat" (docs/specs/26-spec-webchat-nativo.md).
+ * A resposta da IA aparece aqui dentro. Se o CRM não responder, o chat oferece
+ * o WhatsApp como reserva.
  *
  * Funciona sozinho em qualquer site: basta definir window.SITE (ver config.js)
  * e incluir <script src="chat.js"></script>.
@@ -67,6 +70,15 @@
     ".cs-enviar{width:44px;height:44px;flex-shrink:0;border-radius:50%;border:0;background:var(--cor,#0f766e);color:#fff;cursor:pointer;display:grid;place-items:center}",
     ".cs-enviar svg{width:20px;height:20px}",
     ".cs-assina{text-align:center;font-size:11px;color:var(--texto-suave,#5b6663);padding:0 0 8px;background:var(--fundo,#fff)}",
+    ".cs-form{align-self:stretch;background:var(--fundo,#fff);border:1px solid var(--borda,#e2e8e6);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}",
+    ".cs-form label{font-size:13px;font-weight:600;display:flex;flex-direction:column;gap:5px}",
+    ".cs-form input[type=text],.cs-form input[type=tel]{border:1px solid var(--borda,#e2e8e6);background:var(--fundo,#fff);color:inherit;border-radius:10px;padding:10px 12px;font:15px inherit;font-family:inherit;outline:none}",
+    ".cs-form input:focus{border-color:var(--cor,#0f766e)}",
+    ".cs-form .cs-check{flex-direction:row;align-items:flex-start;gap:8px;font-weight:400;font-size:12.5px;color:var(--texto-suave,#5b6663);line-height:1.4}",
+    ".cs-form .cs-check input{margin-top:2px;accent-color:var(--cor,#0f766e)}",
+    ".cs-form button{background:var(--cor,#0f766e);color:#fff;border:0;border-radius:10px;padding:11px;font:700 14px inherit;font-family:inherit;cursor:pointer}",
+    ".cs-erro{color:#be123c;font-size:12.5px;min-height:1em}",
+    ".cs-rodape.cs-travado{opacity:.5;pointer-events:none}",
     "@keyframes cs-entra{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}",
     "@keyframes cs-pula{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}",
     "@media (max-width:600px){.cs-janela{right:0;bottom:0;width:100vw;max-width:100vw;height:100%;max-height:100%;border-radius:0;border:0}.cs-lancador.cs-escondido{display:none}}",
@@ -121,7 +133,7 @@
   enviar.setAttribute("aria-label", "Enviar");
   rodape.appendChild(input); rodape.appendChild(enviar);
   var assina = el("div", "cs-assina");
-  assina.textContent = "Atendimento continua no WhatsApp";
+  assina.textContent = (chat.crmUrl && chat.chave) ? "Atendimento com resposta na hora" : "Atendimento continua no WhatsApp";
 
   janela.appendChild(topo); janela.appendChild(corpo); janela.appendChild(rodape); janela.appendChild(assina);
   document.body.appendChild(janela);
@@ -244,8 +256,150 @@
   rodape.addEventListener("submit", function (e) {
     e.preventDefault();
     var v = input.value; input.value = "";
-    aoEnviar(v);
+    canal.ativo ? canalEnviar(v) : aoEnviar(v);
   });
+
+
+  // ---------- modo canal: conversa direto com o CRM (spec 26) ----------
+  var canal = {
+    ativo: !!(chat.crmUrl && chat.chave),
+    base: String(chat.crmUrl || "").replace(/\/+$/, "") + "/api/v1/webchat/" + encodeURIComponent(chat.chave || ""),
+    token: null,
+    cursor: null,
+    vistas: {},
+    timer: null,
+  };
+  var CHAVE_TOKEN = "chat-site-token:" + (chat.chave || "");
+  try { canal.token = localStorage.getItem(CHAVE_TOKEN); } catch (e) {}
+
+  // Mesma regra do servidor (lib/channels/webchat/entrada.ts): DDD + número ganha o 55.
+  function whatsValido(bruto) {
+    var t = String(bruto || "").trim();
+    var d = t.replace(/\D/g, "");
+    if (t.charAt(0) === "+") return d.length >= 10 && d.length <= 15;
+    if (d.length === 10 || d.length === 11) return Number(d.slice(0, 2)) >= 11;
+    return (d.length === 12 || d.length === 13) && d.indexOf("55") === 0;
+  }
+
+  function chamar(metodo, caminho, corpo) {
+    var cab = { "Content-Type": "application/json" };
+    if (canal.token) cab.Authorization = "Bearer " + canal.token;
+    return fetch(canal.base + caminho, {
+      method: metodo,
+      headers: cab,
+      body: corpo ? JSON.stringify(corpo) : undefined,
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok) {
+          var e = new Error((j.error && j.error.code) || "falha");
+          e.status = r.status;
+          throw e;
+        }
+        return j.data || {};
+      });
+    });
+  }
+
+  function reservaWhats(motivo) {
+    var texto = motivo === "limite"
+      ? "Para continuar, fale com a gente direto no WhatsApp. 📲"
+      : "Não consegui falar com a equipe agora. Continue pelo WhatsApp, por favor. 📲";
+    bolha(texto, "bot", false);
+    botaoWhats("Olá! Vim pelo chat do site e quero continuar o atendimento.");
+  }
+
+  function mostrarMensagens(lista) {
+    (lista || []).forEach(function (m) {
+      if (!m || canal.vistas[m.id]) return;
+      canal.vistas[m.id] = true;
+      if (m.direcao === "outbound") bolha(m.texto, "bot", false);
+    });
+  }
+
+  function buscar() {
+    if (!canal.token) return;
+    var q = canal.cursor ? "?depois=" + encodeURIComponent(canal.cursor) : "";
+    chamar("GET", "/mensagens" + q).then(function (d) {
+      mostrarMensagens(d.mensagens);
+      if (d.cursor) canal.cursor = d.cursor;
+    }).catch(function (e) {
+      if (e.status === 401) { esquecerVisitante(); pedirIdentificacao(); }
+    }).then(agendarBusca);
+  }
+  function agendarBusca() {
+    clearTimeout(canal.timer);
+    if (!canal.token || !janela.classList.contains("cs-aberta")) return;
+    canal.timer = setTimeout(buscar, document.hidden ? 15000 : 3000);
+  }
+  function esquecerVisitante() {
+    canal.token = null; canal.cursor = null; canal.vistas = {};
+    try { localStorage.removeItem(CHAVE_TOKEN); } catch (e) {}
+  }
+
+  var identificacao = null;
+  function pedirIdentificacao() {
+    rodape.classList.add("cs-travado");
+    var f = el("form", "cs-form");
+    f.innerHTML =
+      '<label>Seu nome<input type="text" name="nome" maxlength="80" autocomplete="name"></label>' +
+      '<label>Seu WhatsApp *<input type="tel" name="whatsapp" required inputmode="tel" autocomplete="tel" placeholder="(11) 98765-4321"></label>' +
+      '<label class="cs-check"><input type="checkbox" name="consentimento"><span></span></label>' +
+      '<div class="cs-erro" aria-live="polite"></div>' +
+      '<button type="submit">Começar conversa</button>';
+    f.querySelector(".cs-check span").textContent =
+      "Aceito receber contato da " + site.nome + " pelo WhatsApp sobre este atendimento.";
+    f.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var w = f.whatsapp.value;
+      if (!whatsValido(w)) {
+        f.querySelector(".cs-erro").textContent = "Digite o WhatsApp com DDD, por exemplo (11) 98765-4321.";
+        f.whatsapp.focus();
+        return;
+      }
+      identificacao = {
+        nome: f.nome.value.trim() || null,
+        whatsapp: w,
+        consentimento_whatsapp: !!f.consentimento.checked,
+      };
+      f.remove();
+      rodape.classList.remove("cs-travado");
+      botDiz(identificacao.nome ? "Obrigado, " + identificacao.nome + "! Como posso ajudar?" : "Obrigado! Como posso ajudar?");
+      input.focus();
+    });
+    corpo.appendChild(f); rolar();
+    setTimeout(function () { f.whatsapp.focus(); }, 250);
+  }
+
+  function canalIniciar() {
+    if (canal.token) { buscar(); return; }
+    botDiz(txt.boasVindas, pedirIdentificacao);
+  }
+
+  function canalEnviar(texto) {
+    texto = texto.trim();
+    if (!texto) return;
+    if (!canal.token && !identificacao) { pedirIdentificacao(); return; }
+    bolha(texto, "eu", false);
+    var corpoReq = canal.token ? { texto: texto } : {
+      nome: identificacao.nome,
+      whatsapp: identificacao.whatsapp,
+      consentimento_whatsapp: identificacao.consentimento_whatsapp,
+      texto: texto,
+      pagina: location.href.split("#")[0].slice(0, 500),
+    };
+    chamar("POST", "/mensagens", corpoReq).then(function (d) {
+      if (d.visitante_token) {
+        canal.token = d.visitante_token;
+        try { localStorage.setItem(CHAVE_TOKEN, canal.token); } catch (e) {}
+      }
+      if (d.mensagem && d.mensagem.id) canal.vistas[d.mensagem.id] = true;
+      agendarBusca();
+    }).catch(function (e) {
+      if (e.status === 401) { esquecerVisitante(); pedirIdentificacao(); return; }
+      if (e.status === 422 && e.message === "whatsapp_invalido") { identificacao = null; pedirIdentificacao(); return; }
+      reservaWhats(e.status === 429 ? "limite" : "falha");
+    });
+  }
 
   // ---------- abrir / fechar ----------
   var iniciado = false;
@@ -254,7 +408,10 @@
     lancador.classList.add("cs-escondido");
     lancador.setAttribute("aria-expanded", "true");
     badge.style.display = "none";
-    if (!iniciado) {
+    if (!iniciado && canal.ativo) {
+      iniciado = true;
+      canalIniciar();
+    } else if (!iniciado) {
       iniciado = true;
       if (estado.historico.length) {
         estado.historico.forEach(function (h) { bolha(h.t, h.q, false); });
@@ -264,9 +421,11 @@
       }
     }
     setTimeout(function () { input.focus(); }, 200);
+    if (canal.ativo && canal.token) agendarBusca();
   }
   function fecharJanela() {
     janela.classList.remove("cs-aberta");
+    clearTimeout(canal.timer);
     lancador.classList.remove("cs-escondido");
     lancador.setAttribute("aria-expanded", "false");
     lancador.focus();
