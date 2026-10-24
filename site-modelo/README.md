@@ -12,6 +12,8 @@ Visitante no site → botão do WhatsApp → número conectado ao CRM → IA ate
 |---|---|
 | `index.html` | O site. Não precisa mexer. |
 | `chat.js` | O chat dentro do site. Funciona sozinho: também pode ser colocado em qualquer outro site, junto com o `config.js`. |
+| `vitrine.js` | A vitrine de produtos (categorias, busca, esgotado, botão de compra). Lê o catálogo do CRM (`catalogo.url`) ou a lista `produtos` do `config.js`. Sem produtos, a seção fica escondida. |
+| `exemplos/config-loja-eletronicos.js` | Exemplo completo de loja com vitrine e entrega agendada. Copie por cima do `config.js`. |
 | `config.js` | **Tudo o que muda de um cliente para outro**: nome, cores, logo, número do WhatsApp, textos, serviços, depoimentos, FAQ, endereço e redes sociais. |
 
 ## Como criar o site de um cliente novo

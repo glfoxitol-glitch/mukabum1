@@ -88,10 +88,25 @@ Para clientes que vendem produtos (exemplo: loja de eletrônicos). O que **já e
 | IA busca produtos e manda fotos no WhatsApp (`crm_search_products`, `fotos-do-produto`) | ✅ já existe |
 | Agenda com horários livres, marcar, remarcar, confirmar e lembrete (`crm_find_free_slots`, `crm_book_appointment`…) | ✅ já existe |
 | Integração com Nuvemshop (produtos e pedidos de loja já pronta) | ✅ já existe |
-| **Vitrine no site** lendo o catálogo do CRM (produto cadastrado no CRM aparece no site sozinho) | ❌ falta: rota pública de catálogo + seção de produtos no `site-modelo` |
+| **Vitrine no site** lendo o catálogo do CRM (produto cadastrado no CRM aparece no site sozinho) | ⚠️ metade: a vitrine do `site-modelo` está pronta (`vitrine.js`, categorias, busca, esgotado) e lê `catalogo.url`; falta a rota pública do CRM que devolve o catálogo |
 | **IA cria o pedido** na conversa (carrinho → pedido → link de pagamento) | ❌ falta: hoje a IA só *lista* pedidos (`crm_list_contact_orders`) |
-| **Entrega agendada** (cliente escolhe dia/horário de entrega e endereço) | ⚠️ parcial: reusar a agenda com um tipo "Entrega" + endereço do cliente |
-| Botão "Comprar pelo WhatsApp" em cada produto do site | ❌ falta: abre o chat/WhatsApp já com o produto escolhido |
+| **Entrega agendada** (cliente escolhe dia/horário de entrega e endereço) | ⚠️ quase tudo existe, ver abaixo |
+| Botão "Comprar pelo WhatsApp" em cada produto do site | ✅ pronto no `site-modelo`: abre o chat (modo canal) ou o WhatsApp com o produto escrito |
+
+#### Entrega agendada: horário ocupado não é oferecido de novo
+A agenda do CRM já resolve o conflito que você descreveu, em três camadas:
+
+1. **O motor de horários livres** (`lib/agenda/horarios-livres.ts`) remove da lista o que já está
+   marcado. Se o cliente A reservou terça às 14h, a IA **nem oferece** terça às 14h ao cliente B:
+   mostra os horários livres de cada dia (`crm_find_free_slots`).
+2. **A trava no banco** (migration 0182): se dois clientes tentam o mesmo horário no mesmo segundo,
+   só um consegue. O outro recebe "horário já ocupado" e a IA oferece os próximos livres.
+3. **Capacidade por horário** (`service_capacity`): se a loja tem **2 entregadores**, cada faixa
+   aceita 2 entregas antes de sair da lista.
+
+Configuração (pela tela, sem programar): tipo de agendamento **"Entrega"** com duração da faixa
+(ex.: 2 h), jornada da loja, antecedência mínima e capacidade = número de entregadores.
+**O que falta construir:** o endereço de entrega ligado ao pedido e o lembrete de saída para entrega.
 
 Fluxo alvo:
 ```
@@ -101,6 +116,33 @@ Cliente no WhatsApp: "quero ver celulares até R$ 1.500"
   → IA oferece horários de entrega livres → cliente escolhe → entrega agendada
   → lembrete no dia + pedido no funil para a equipe separar e entregar
 ```
+
+### IA: Claude + Jev
+O CRM **já usa as duas**:
+- **Claude** (provedor Anthropic) é a IA que conversa, entende e responde (`lib/ai/`).
+- **Jev** (TypeSafe) já decide coisas rápidas e estruturadas (`lib/ai/decisao/`): qual agente
+  atende (roteador, em modo comparação ou sob demanda), urgência, pedido de parar contato, tarefas.
+
+A combinação recomendada para o seu produto:
+| Tarefa | Quem faz | Por quê |
+|---|---|---|
+| Triagem e roteamento ("é compra, suporte ou entrega?") | **Jev** | Decisão de múltipla escolha, em milissegundos |
+| Conversa de venda e atendimento | **Claude Haiku 5.5** | Rápido e barato ($0,10 / $0,50 por milhão de tokens) |
+| Casos difíceis e "construir" (montar o site, o agente, o funil para o cliente) | **Claude Opus 5.5** (ou Sonnet 5.5) | Precisa raciocinar mais |
+
+**Atenção:**
+- **O plano Max do Claude não inclui a API.** O Max é a assinatura do app (claude.ai e Claude
+  Code). A API, que o CRM usa, é cobrada à parte, por uso, numa conta no Console da Anthropic
+  (platform.claude.com). Use o Max para **desenvolver** e a API para **o CRM dos clientes**.
+- **O catálogo de modelos do CRM ainda lista o Claude Haiku 4.5**, não o Haiku 5.5. Incluir o
+  Haiku 5.5 (catálogo `ai_models` + tabela de custo `lib/ai/runtime/cost.ts`) é uma mudança de
+  banco, para a sessão com Docker.
+
+**Assistente que "arruma o CRM e o site" para o cliente** (ideia para a Fase 3): o cliente escreve
+"quero vender celulares com entrega das 9h às 18h, 2 entregadores" e um agente Opus monta
+**rascunhos** (tipo de agendamento "Entrega", agente de vendas, FAQ, `config.js` do site) que o
+cliente revisa e publica. Rascunho + publicação manual segue a regra do próprio CRM: propostas da IA
+só valem com aprovação humana.
 
 ### Fase 3: editor de site com IA dentro do CRM
 - [ ] Tela "Meu site" no painel da empresa

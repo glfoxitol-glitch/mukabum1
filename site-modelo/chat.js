@@ -440,5 +440,12 @@
   if (chat.abrirSozinhoEm > 0) {
     setTimeout(function () { if (!iniciado) abrir(); }, chat.abrirSozinhoEm * 1000);
   }
-  window.ChatDoSite = { abrir: abrir, fechar: fecharJanela };
+  // Abre o chat com um texto já escrito (a vitrine usa no botão "Comprar").
+  // O visitante revisa e envia; nada sai sem ele tocar em enviar.
+  function abrirCom(texto) {
+    abrir();
+    input.value = String(texto || "").slice(0, 500);
+    setTimeout(function () { input.focus(); }, 250);
+  }
+  window.ChatDoSite = { abrir: abrir, fechar: fecharJanela, abrirCom: abrirCom, conversaComCrm: canal.ativo };
 })();
