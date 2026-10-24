@@ -46,6 +46,18 @@ agente por intenção e `membrosDoModelo()`, que monta os membros para a rota qu
 (`PUT /api/v1/ai/routers/[id]/members`). Testes em `lib/roteador/modelos/modelos.test.ts`, incluindo
 a pergunta real ao Jev montada por `perguntaDoRoteador`.
 
+**Qualquer ramo, nunca um só (decisão do dono do produto, 24/10/2026).** O CRM vai atender loja de
+eletrônicos, de videogame, de brinquedos, comida e barbearia. Por isso:
+- a pergunta de categoria (`lib/ai/decisao/categoria-do-catalogo.ts`) monta as opções a cada vez a
+  partir de `catalog_products.categoria` **da organização** (só produtos ativos, grafias agrupadas,
+  até 254 + "nenhuma"), com chaves `cat_<n>` nossas e o nome da loja no critério. Um teste reprova se
+  o arquivo passar a nomear categoria de qualquer ramo. Testada com cinco ramos (eletrônicos,
+  videogames, brinquedos, comida e barbearia que vende produtos);
+- os modelos de roteador cobrem três formas de negócio: `loja_com_entrega`, `servicos_com_agenda`
+  (barbearia, salão, estética, estúdio) e `comida_com_entrega`, com o papel `agenda` para quem vende
+  horário. Nenhum texto de modelo nomeia ramo, produto ou preço (também conferido em teste). O que é
+  do ramo vem do catálogo e da agenda da empresa.
+
 **Por que `cascata` nas duas últimas:** a regra do próprio agente (a ferramenta que ele chamou, as
 palavras configuradas) decide primeiro, e o Jev só é perguntado onde ela não decidiu. Errar ali
 não pode marcar uma entrega que ninguém pediu.
@@ -123,7 +135,7 @@ tela, com o país do processamento, para o seu cliente decidir com informação 
 |---|---|---|
 | 1 | Haiku 5.5 no catálogo + custo | `pnpm test:db` + teste de custo |
 | 2 | ✅ Modelo de roteador `loja_com_entrega` (a intenção da loja, sobre a tarefa `roteador` que já existe) | 11 testes + sabotagem; falta instalá-lo pelo assistente (fatia 5) e medir a concordância numa empresa real |
-| 3 | `categoria_do_catalogo` + `confirmacao_do_cliente` | unit + spec Playwright pelo agente (prova em par) |
+| 3 | ⚠️ `categoria_do_catalogo`: pergunta pronta e testada (18 casos, 5 ramos). Falta registrá-la em `TAREFAS` (estados, aceite, textos, cartão) e o consumidor antes de `crm_search_products`. `confirmacao_do_cliente`: a fazer | unit + spec Playwright pelo agente (prova em par) |
 | 4 | Chave do Jev da instalação | tripla + `test:db` + tela |
 | 5 | Assistente de configuração (rascunhos) | spec Playwright: descreve o negócio → rascunhos → publica |
 | 6 | Medição Haiku 5.5 × DeepSeek | relatório com as 4 réguas da §5 |

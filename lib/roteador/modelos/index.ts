@@ -8,13 +8,19 @@
  */
 import type { RouterMember } from "@/lib/agent-engine/agent/router-config";
 
+import { MODELOS_DE_COMIDA } from "./comida";
 import { MODELOS_DE_LOJA } from "./loja";
+import { MODELOS_DE_SERVICOS } from "./servicos";
 import type { ModeloDeRoteador, NichoDeRoteador, Papel } from "./tipos";
 
 export type { IntencaoDoModelo, ModeloDeRoteador, NichoDeRoteador, Papel } from "./tipos";
 export { PAPEIS, NICHOS_DE_ROTEADOR } from "./tipos";
 
-export const MODELOS_DE_ROTEADOR: readonly ModeloDeRoteador[] = [...MODELOS_DE_LOJA];
+export const MODELOS_DE_ROTEADOR: readonly ModeloDeRoteador[] = [
+  ...MODELOS_DE_LOJA,
+  ...MODELOS_DE_SERVICOS,
+  ...MODELOS_DE_COMIDA,
+];
 
 /** `undefined` — e não um erro — para a rota devolver 404 com a própria mensagem. */
 export function modeloDeRoteadorPorId(id: string): ModeloDeRoteador | undefined {
@@ -29,8 +35,8 @@ export function modelosDeRoteadorDoNicho(nicho: NichoDeRoteador): ModeloDeRotead
  * Os membros do roteador a partir do modelo e de quem atende cada papel.
  *
  * Papel sem agente é ERRO, não intenção omitida: um roteador sem a intenção
- * "suporte_troca" mandaria o cliente com defeito para o vendedor, que é a
- * fronteira que o modelo existe para separar. A empresa pequena liga os três
+ * de suporte mandaria o cliente com problema para o vendedor, que é a
+ * fronteira que o modelo existe para separar. A empresa pequena liga todos os
  * papéis ao mesmo agente — isso é escolha dela, e não uma lacuna.
  */
 export function membrosDoModelo(

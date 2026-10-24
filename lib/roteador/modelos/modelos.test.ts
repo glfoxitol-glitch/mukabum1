@@ -60,6 +60,15 @@ describe.each(MODELOS_DE_ROTEADOR.map((m) => [m.id, m] as const))("modelo %s", (
     }
   });
 
+  it("nenhum texto nomeia um ramo: o mesmo modelo serve qualquer empresa do nicho", () => {
+    const textos = [modelo.rotulo, modelo.oQueFaz, ...modelo.intencoes.flatMap((i) => [i.descricao, ...i.exemplos])]
+      .join(" ")
+      .toLowerCase();
+    for (const ramo of ["celular", "fone", "notebook", "videogame", "brinquedo", "pizza", "hamb", "barba", "cabelo", "unha", "tatuagem"]) {
+      expect(textos, ramo).not.toContain(ramo);
+    }
+  });
+
   it("nenhum texto traz preço da loja ou campo interpolado", () => {
     const textos = [modelo.rotulo, modelo.oQueFaz, ...modelo.intencoes.flatMap((i) => [i.descricao, ...i.exemplos])];
     for (const t of textos) {
@@ -69,7 +78,7 @@ describe.each(MODELOS_DE_ROTEADOR.map((m) => [m.id, m] as const))("modelo %s", (
   });
 
   it("a pergunta ao Jev tem uma escolha por intenção e mais o nenhuma", () => {
-    const r = membrosDoModelo(modelo, { vendas: AGENTE, entrega: AGENTE, suporte: AGENTE });
+    const r = membrosDoModelo(modelo, { vendas: AGENTE, agenda: AGENTE, entrega: AGENTE, suporte: AGENTE });
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     const pergunta = perguntaDoRoteador(r.membros);
@@ -79,6 +88,24 @@ describe.each(MODELOS_DE_ROTEADOR.map((m) => [m.id, m] as const))("modelo %s", (
     expect(Object.keys(criterios).sort()).toEqual([...nomes, "none"].sort());
     // Os exemplos chegam ao Jev junto com o critério.
     for (const i of modelo.intencoes) expect(criterios[i.nome]).toContain(i.exemplos[0]);
+  });
+});
+
+describe("catálogo de modelos", () => {
+  it("cobre loja, serviço com agenda e comida, e os ids são únicos", () => {
+    const ids = MODELOS_DE_ROTEADOR.map((m) => m.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(new Set(MODELOS_DE_ROTEADOR.map((m) => m.nicho))).toEqual(new Set(["loja", "servicos", "comida"]));
+  });
+
+  it("serviço com agenda manda marcar e remarcar para o papel agenda", () => {
+    const m = modeloDeRoteadorPorId("servicos_com_agenda");
+    expect(m?.intencoes.filter((i) => i.papel === "agenda").map((i) => i.nome)).toEqual(["marcar_horario", "remarcar_ou_cancelar"]);
+  });
+
+  it("comida nunca manda quem acompanha o pedido para o vendedor", () => {
+    const m = modeloDeRoteadorPorId("comida_com_entrega");
+    expect(m?.intencoes.find((i) => i.nome === "acompanhar_pedido")?.papel).toBe("entrega");
   });
 });
 

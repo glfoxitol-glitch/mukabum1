@@ -22,10 +22,10 @@ export const DESCRICAO_DA_INTENCAO_MAXIMO = 2000;
  * O papel do agente que atende a intenção. Duas intenções com o mesmo papel vão
  * para o mesmo agente; a empresa pequena liga todos os papéis a um agente só.
  */
-export const PAPEIS = ["vendas", "entrega", "suporte"] as const;
+export const PAPEIS = ["vendas", "agenda", "entrega", "suporte"] as const;
 export type Papel = (typeof PAPEIS)[number];
 
-export const NICHOS_DE_ROTEADOR = ["loja"] as const;
+export const NICHOS_DE_ROTEADOR = ["loja", "servicos", "comida"] as const;
 export type NichoDeRoteador = (typeof NICHOS_DE_ROTEADOR)[number];
 
 export interface IntencaoDoModelo {

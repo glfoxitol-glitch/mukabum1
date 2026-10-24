@@ -14,13 +14,14 @@
  *
  * 1. **As fronteiras são ditas nas duas pontas.** "Comprar" e "ver catálogo"
  *    se parecem; a descrição de cada uma diz o que é DA OUTRA. Sem isso, a
- *    pergunta "tem celular até 1500?" cai ora numa, ora noutra, e a régua de
+ *    pergunta "tem alguma coisa até 200 reais?" cai ora numa, ora noutra, e a régua de
  *    concordância mede ruído.
  * 2. **Pedido JÁ FEITO nunca é compra.** "Cadê meu pedido" e "quero trocar"
  *    vão para quem cuida do pós-venda, nunca de volta para o vendedor.
- * 3. **Nenhum texto nomeia a loja, marca de produto ou preço.** Uma imagem
- *    serve todas as marcas (doutrina de marca própria), e o modelo é instalado
- *    em lojas de qualquer ramo.
+ * 3. **Nenhum texto nomeia a loja, o ramo, marca de produto ou preço.** Uma
+ *    imagem serve todas as marcas (doutrina de marca própria), e o mesmo modelo
+ *    é instalado em loja de eletrônicos, de brinquedos ou de roupas. O que é
+ *    do ramo (as categorias) vem do catálogo da empresa, nunca daqui.
  * 4. **Nenhum exemplo aparece em duas intenções**, conferido em `modelos.test.ts`.
  */
 import type { ModeloDeRoteador } from "./tipos";
@@ -37,11 +38,11 @@ export const MODELO_LOJA_COM_ENTREGA: ModeloDeRoteador = {
       descricao:
         "O cliente quer comprar um produto que ele já sabe qual é: pergunta preço, disponibilidade ou forma de pagamento DESSE produto, pede para fechar o pedido ou diz que vai levar. Se ainda não escolheu e quer ver opções, é ver_catalogo. Se o pedido já foi feito, não é esta intenção",
       exemplos: [
-        "quero comprar esse celular",
-        "quanto está o fone que vi no site?",
-        "tem o modelo de 256GB disponível?",
+        "quero comprar esse que vi no site",
+        "quanto está esse produto?",
+        "tem esse na cor azul?",
         "vou levar, como faço o pagamento?",
-        "aceita pix nesse notebook?",
+        "aceita pix?",
       ],
       papel: "vendas",
     },
@@ -50,11 +51,11 @@ export const MODELO_LOJA_COM_ENTREGA: ModeloDeRoteador = {
       descricao:
         "O cliente ainda não escolheu o produto: quer ver opções, uma categoria, novidades, promoções ou recomendação dentro de uma faixa de preço. Se ele já cita o produto que quer comprar, é comprar",
       exemplos: [
-        "quais celulares vocês têm?",
-        "me mostra os fones",
+        "o que vocês têm?",
+        "me mostra as opções",
         "tem alguma promoção hoje?",
-        "qual notebook você indica para estudar?",
-        "tem celular até 1500?",
+        "qual você indica para presente?",
+        "tem alguma coisa até 200 reais?",
       ],
       papel: "vendas",
     },
@@ -89,9 +90,9 @@ export const MODELO_LOJA_COM_ENTREGA: ModeloDeRoteador = {
       descricao:
         "O cliente tem problema com um produto que já recebeu: defeito, não funciona, veio errado, quer trocar, devolver, usar a garantia ou cancelar uma compra feita",
       exemplos: [
-        "o fone parou de funcionar",
+        "o produto parou de funcionar",
         "veio a cor errada",
-        "quero trocar por outro modelo",
+        "quero trocar por outro",
         "como funciona a garantia?",
         "quero cancelar a compra",
       ],
