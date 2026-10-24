@@ -117,32 +117,49 @@ Cliente no WhatsApp: "quero ver celulares até R$ 1.500"
   → lembrete no dia + pedido no funil para a equipe separar e entregar
 ```
 
-### IA: Claude + Jev
-O CRM **já usa as duas**:
-- **Claude** (provedor Anthropic) é a IA que conversa, entende e responde (`lib/ai/`).
-- **Jev** (TypeSafe) já decide coisas rápidas e estruturadas (`lib/ai/decisao/`): qual agente
-  atende (roteador, em modo comparação ou sob demanda), urgência, pedido de parar contato, tarefas.
+### IA: Jev (TypeSafe) + Claude Haiku 5.5
+O **Jev da TypeSafe já está embutido neste CRM** (`lib/ai/decisao/`, provedor `typesafe`). Ele
+responde três tipos de pergunta em milissegundos: **escolha** (uma opção de uma lista), **sim/não**
+e **nota**. Hoje ele já cuida de 9 tarefas: roteador (qual agente atende), clima da conversa,
+pedido de humano, pedido para parar contato, urgência, follow-up, campo do negócio, tentativa de
+manipulação e afirmação de fato. Cada tarefa liga em três estados (desligada → observando →
+decidindo), com aceite da empresa.
 
-A combinação recomendada para o seu produto:
-| Tarefa | Quem faz | Por quê |
+**A divisão que encaixa a sua ideia:** o Jev **decide** (rápido e barato) e o Haiku 5.5 **escreve**
+(rápido e com qualidade de texto).
+
+#### Novas tarefas do Jev no atendimento da loja
+| Tarefa nova | Primitiva | Para quê |
 |---|---|---|
-| Triagem e roteamento ("é compra, suporte ou entrega?") | **Jev** | Decisão de múltipla escolha, em milissegundos |
-| Conversa de venda e atendimento | **Claude Haiku 5.5** | Rápido e barato ($0,10 / $0,50 por milhão de tokens) |
-| Casos difíceis e "construir" (montar o site, o agente, o funil para o cliente) | **Claude Opus 5.5** (ou Sonnet 5.5) | Precisa raciocinar mais |
+| Intenção da mensagem: comprar, ver catálogo, agendar entrega, suporte, troca | escolha | Já leva o cliente ao fluxo certo, sem a IA de conversa gastar um turno para entender |
+| Categoria do catálogo pedida ("quero ver celulares") | escolha (entre as categorias da loja) | Filtra o catálogo antes de o Haiku montar a resposta com fotos e preços |
+| "Já escolheu o produto?" / "Aceitou o horário?" | sim/não | Avança o pedido e a entrega no funil sozinho |
 
-**Atenção:**
-- **O plano Max do Claude não inclui a API.** O Max é a assinatura do app (claude.ai e Claude
-  Code). A API, que o CRM usa, é cobrada à parte, por uso, numa conta no Console da Anthropic
-  (platform.claude.com). Use o Max para **desenvolver** e a API para **o CRM dos clientes**.
-- **O catálogo de modelos do CRM ainda lista o Claude Haiku 4.5**, não o Haiku 5.5. Incluir o
-  Haiku 5.5 (catálogo `ai_models` + tabela de custo `lib/ai/runtime/cost.ts`) é uma mudança de
-  banco, para a sessão com Docker.
+#### Assistente de configuração (Fase 3): o cliente monta o CRM e o site conversando
+O cliente escreve: *"Vendo eletrônicos, entrego das 9h às 18h, tenho 2 entregadores, aceito Pix e cartão"*.
 
-**Assistente que "arruma o CRM e o site" para o cliente** (ideia para a Fase 3): o cliente escreve
-"quero vender celulares com entrega das 9h às 18h, 2 entregadores" e um agente Opus monta
-**rascunhos** (tipo de agendamento "Entrega", agente de vendas, FAQ, `config.js` do site) que o
-cliente revisa e publica. Rascunho + publicação manual segue a regra do próprio CRM: propostas da IA
-só valem com aprovação humana.
+```
+Jev (escolha)  → nicho: loja │ clínica │ serviços │ imobiliária …      → escolhe o MODELO pronto
+Jev (sim/não)  → tem entrega? tem agenda? vende produto? tem catálogo?  → liga só as peças certas
+Jev (nota)     → o que falta para ficar pronto (0–100)                   → próxima pergunta ao cliente
+Haiku 5.5      → escreve textos: FAQ, boas-vindas, prompt do agente, config.js do site
+       ↓
+RASCUNHOS: tipo de agendamento "Entrega" (faixa, horário, capacidade = entregadores),
+           agente de vendas, FAQ, funil, site (config.js)  →  o cliente revisa e publica
+```
+
+Por que funciona bem com o Jev: montar um CRM é, na maior parte, **escolher entre opções que já
+existem** (modelo de nicho, quais módulos ligar, quais etapas de funil). Isso é exatamente o que o
+Jev faz em milissegundos. Só os textos precisam de um modelo de linguagem, e para isso o Haiku 5.5
+basta. Tudo sai como **rascunho**: a regra do próprio CRM é que proposta da IA só vale com aprovação
+humana.
+
+#### A sua chave para todos os clientes
+Hoje a chave do Jev é **por empresa** (cada organização cadastra a sua). Para você fornecer o Jev a
+todos os clientes com a **sua** conta, falta uma **chave da instalação** para o Jev, como a que já
+existe para a IA de conversa (`lib/ai/gateway-binding.ts`: chave da empresa primeiro, senão a da
+instalação), com o gasto medido por empresa e o teto do plano. É mudança de banco, para a sessão
+com Docker.
 
 ### Fase 3: editor de site com IA dentro do CRM
 - [ ] Tela "Meu site" no painel da empresa
