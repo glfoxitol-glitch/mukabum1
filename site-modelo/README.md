@@ -11,6 +11,7 @@ Visitante no site → botão do WhatsApp → número conectado ao CRM → IA ate
 | Arquivo | Para que serve |
 |---|---|
 | `index.html` | O site. Não precisa mexer. |
+| `chat.js` | O chat dentro do site. Funciona sozinho: também pode ser colocado em qualquer outro site, junto com o `config.js`. |
 | `config.js` | **Tudo o que muda de um cliente para outro**: nome, cores, logo, número do WhatsApp, textos, serviços, depoimentos, FAQ, endereço e redes sociais. |
 
 ## Como criar o site de um cliente novo
@@ -39,6 +40,16 @@ Cada botão pode mandar uma mensagem inicial diferente (`whatsapp.mensagens`). E
 
 O site é só HTML, CSS e JavaScript. Não precisa de servidor, banco de dados nem instalação.
 
-## Limitação
+## Chat do site
 
-O botão abre o **WhatsApp** do visitante, que é o que liga o site ao CRM hoje. Uma janela de chat **dentro** do site, sem abrir o WhatsApp, ainda não existe no CRM e precisaria ser desenvolvida.
+O balão no canto da tela abre um chat que:
+
+1. dá as boas-vindas e mostra as perguntas frequentes;
+2. responde dúvidas digitadas, buscando no `faq` do `config.js` (o campo `palavras` ajuda a reconhecer outras formas de perguntar);
+3. quando o visitante quer falar com a empresa, pede o nome e a mensagem e abre o WhatsApp com tudo pronto. A conversa cai no CRM, onde a IA assume.
+
+As opções ficam em `chat` no `config.js`: título, status, boas-vindas, texto do botão e abertura automática.
+
+Qualquer botão com `data-abrir-chat` abre o chat, e também é possível abrir pelo JavaScript com `ChatDoSite.abrir()`.
+
+**Por enquanto**, a conversa com a equipe continua no WhatsApp. Na Fase 2 do plano (`PLANO-DO-PRODUTO.md`), o chat passa a conversar com a IA do CRM sem sair do site.

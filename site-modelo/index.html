@@ -142,31 +142,7 @@
     .rodape a:hover { color: var(--texto); }
     .redes { display: flex; gap: 16px; }
 
-    /* Botão flutuante do WhatsApp */
-    .whats-flutuante {
-      position: fixed; right: 20px; bottom: 20px; z-index: 100;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .whats-balao {
-      background: var(--fundo); color: var(--texto); border: 1px solid var(--borda);
-      padding: 10px 14px; border-radius: 12px; font-size: .9rem; font-weight: 500;
-      box-shadow: 0 8px 24px rgba(0,0,0,.12); max-width: 220px;
-      opacity: 0; transform: translateX(8px); transition: opacity .3s, transform .3s; pointer-events: none;
-    }
-    .whats-balao.visivel { opacity: 1; transform: none; }
-    .whats-botao {
-      width: 60px; height: 60px; border-radius: 50%; background: var(--whatsapp);
-      display: grid; place-items: center; box-shadow: 0 10px 28px rgba(37, 211, 102, .45);
-      transition: transform .15s;
-    }
-    .whats-botao:hover { transform: scale(1.07); }
-    .whats-botao svg { width: 32px; height: 32px; }
-    .whats-botao::before {
-      content: ""; position: absolute; width: 60px; height: 60px; border-radius: 50%;
-      background: var(--whatsapp); z-index: -1; animation: pulso 2.4s infinite;
-    }
-    @keyframes pulso { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(1.6); opacity: 0; } }
-    @media (prefers-reduced-motion: reduce) { .whats-botao::before { animation: none; } html { scroll-behavior: auto; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
     /* Responsivo */
     @media (max-width: 900px) {
@@ -181,7 +157,6 @@
       .nav .botao span { display: none; }
       .nav .botao { padding: 10px; }
       .acoes .botao { width: 100%; }
-      .whats-balao { display: none; }
       .cta { padding: 40px 20px; }
     }
   </style>
@@ -284,15 +259,9 @@
   </div>
 </footer>
 
-<div class="whats-flutuante">
-  <div class="whats-balao" id="whats-balao"></div>
-  <a class="whats-botao" data-whats="flutuante" href="#" aria-label="Conversar no WhatsApp">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.8 3 16c0 2.3.6 4.5 1.7 6.5L3 29l6.7-1.7c1.9 1 4.1 1.6 6.3 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.7c-2 0-3.9-.5-5.6-1.5l-.4-.2-4 1 1-3.9-.3-.4C5.7 20 5.2 18 5.2 16 5.2 10 10 5.2 16 5.2S26.8 10 26.8 16 22 26.7 16 26.7zm5.9-8.1c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.5c.2.2 2.4 3.6 5.7 5 .8.4 1.4.6 1.9.7.8.3 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg>
-  </a>
-</div>
-
 <!-- Os dados de cada cliente ficam todos em config.js -->
 <script src="config.js"></script>
+<script src="chat.js" defer></script>
 <script>
   (function () {
     var c = window.SITE;
@@ -387,11 +356,6 @@
       return '<a href="' + esc(c.redes[k]) + '" target="_blank" rel="noopener">' + esc(k.charAt(0).toUpperCase() + k.slice(1)) + "</a>";
     }).join("");
 
-    // Balão do botão flutuante aparece depois de alguns segundos
-    if (c.whatsapp.balao) {
-      texto("whats-balao", c.whatsapp.balao);
-      setTimeout(function () { $("whats-balao").classList.add("visivel"); }, 4000);
-    }
   })();
 </script>
 </body>

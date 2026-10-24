@@ -28,6 +28,15 @@ window.SITE = {
     balao: "Olá! 👋 Precisa de ajuda? Fale com a gente.",
   },
 
+  // Chat dentro do site (balão no canto da tela)
+  chat: {
+    titulo: "Clínica Sorriso",            // nome no topo do chat
+    status: "Online agora",
+    boasVindas: "Olá! 👋 Sou o assistente da Clínica Sorriso. Como posso ajudar?",
+    botaoFalar: "Agendar ou falar com a equipe",
+    abrirSozinhoEm: 0,                   // segundos para abrir sozinho (0 = não abre)
+  },
+
   hero: {
     selo: "Atendimento em até 5 minutos",
     titulo: "Seu sorriso bem cuidado, sem complicação",
@@ -70,11 +79,14 @@ window.SITE = {
     { texto: "Meu filho perdeu o medo de dentista aqui.", autor: "Juliana P." },
   ],
 
-  // Deixe a lista vazia [] para esconder a seção
+  // Perguntas frequentes: aparecem no site E são respondidas pelo chat.
+  // "palavras" (opcional) ajuda o chat a reconhecer outras formas de perguntar.
+  // Deixe a lista vazia [] para esconder a seção.
   faq: [
-    { pergunta: "Como faço para agendar?", resposta: "Clique em qualquer botão do WhatsApp. Respondemos na hora e marcamos o melhor horário para você." },
-    { pergunta: "Vocês aceitam convênio?", resposta: "Trabalhamos com os principais convênios. Envie o nome do seu pelo WhatsApp que confirmamos." },
-    { pergunta: "Quais as formas de pagamento?", resposta: "Pix, cartão de crédito em até 12x e débito." },
+    { pergunta: "Como faço para agendar?", resposta: "Clique em qualquer botão do WhatsApp. Respondemos na hora e marcamos o melhor horário para você.", palavras: "agendar marcar consulta horario" },
+    { pergunta: "Vocês aceitam convênio?", resposta: "Trabalhamos com os principais convênios. Envie o nome do seu pelo WhatsApp que confirmamos.", palavras: "plano saude unimed amil" },
+    { pergunta: "Quais as formas de pagamento?", resposta: "Pix, cartão de crédito em até 12x e débito.", palavras: "pagar parcelar cartao pix valor" },
+    { pergunta: "Onde vocês ficam?", resposta: "Rua Exemplo, 123 — Centro, São Paulo/SP. Seg a Sex 8h às 19h e Sáb 8h às 12h.", palavras: "endereco local localizacao horario funcionamento" },
   ],
 
   cta: {
