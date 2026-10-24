@@ -32,9 +32,19 @@ explícita por tarefa.
 
 | id | Primitiva | Alcance | Família | Pergunta | Consumidor |
 |---|---|---|---|---|---|
-| `intencao_da_loja` | `choice` | `mensagem` | `substitui` | Comprar · ver catálogo · agendar entrega · acompanhar pedido · suporte/troca · outra | Leva ao agente certo do roteador (as intenções saem do roteador da empresa, nunca de uma lista fixa no código) |
 | `categoria_do_catalogo` | `choice` | `mensagem` | `cascata` | Qual categoria do catálogo da empresa a mensagem pede ("quero ver celulares") | Filtra `crm_search_products` antes de o agente montar a resposta. As opções saem das categorias distintas de `catalog_products` da organização |
 | `confirmacao_do_cliente` | `noul` | `conversa` | `cascata` | O cliente aceitou o que o agente propôs (produto, horário de entrega)? | Avança o lead no funil. **Nunca** marca nem paga nada sozinho: só a ferramenta do agente marca, e só a pessoa paga |
+
+**A intenção da loja NÃO é tarefa nova (corrigido em 24/10/2026, ao implementar).** O roteador de
+intenção já faz exatamente essa pergunta ao Jev a cada mensagem (`lib/ai/decisao/roteador.ts`,
+tarefa `roteador`), com estados, aceite, régua de concordância, reserva da IA de sempre e destino
+de funil por intenção. Uma `intencao_da_loja` ao lado faria a mesma pergunta duas vezes, com duas
+réguas e dois custos (anti-pattern 2). O que faltava era o **conteúdo**: o modelo de roteador
+`loja_com_entrega` (`lib/roteador/modelos/loja.ts`), com cinco intenções (comprar, ver_catalogo,
+agendar_entrega, acompanhar_pedido, suporte_troca), fronteiras ditas nas duas pontas, papel do
+agente por intenção e `membrosDoModelo()`, que monta os membros para a rota que já grava
+(`PUT /api/v1/ai/routers/[id]/members`). Testes em `lib/roteador/modelos/modelos.test.ts`, incluindo
+a pergunta real ao Jev montada por `perguntaDoRoteador`.
 
 **Por que `cascata` nas duas últimas:** a regra do próprio agente (a ferramenta que ele chamou, as
 palavras configuradas) decide primeiro, e o Jev só é perguntado onde ela não decidiu. Errar ali
@@ -112,7 +122,7 @@ tela, com o país do processamento, para o seu cliente decidir com informação 
 | # | Fatia | Prova |
 |---|---|---|
 | 1 | Haiku 5.5 no catálogo + custo | `pnpm test:db` + teste de custo |
-| 2 | `intencao_da_loja` em observando (só mede concordância) | unit + régua de concordância no cartão |
+| 2 | ✅ Modelo de roteador `loja_com_entrega` (a intenção da loja, sobre a tarefa `roteador` que já existe) | 11 testes + sabotagem; falta instalá-lo pelo assistente (fatia 5) e medir a concordância numa empresa real |
 | 3 | `categoria_do_catalogo` + `confirmacao_do_cliente` | unit + spec Playwright pelo agente (prova em par) |
 | 4 | Chave do Jev da instalação | tripla + `test:db` + tela |
 | 5 | Assistente de configuração (rascunhos) | spec Playwright: descreve o negócio → rascunhos → publica |
