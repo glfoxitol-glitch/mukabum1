@@ -67,7 +67,7 @@ tabela nova para mensagens.
 | `channel_sessions` | `metadata.webchat`: `{ origens_permitidas: string[], saudacao, cor }`. A chave pública do widget é o identificador da sessão (ver §4.1) | sem DDL, mas com schema Zod central (anti-pattern 6) |
 | `conversations.channel` | Aceitar `'site'` no CHECK `conversations_channel_check` e na lista derivada de `lib/channels/canais-de-conversa.ts` | migration + baseline. O invariante `vocabulario-banco-x-typescript` reprova se só um dos lados andar |
 | `conversations.provider_conversation_id` | Recebe o **id do visitante** (`v_<uuid>`), que é a thread do canal, como nas redes sociais | sem DDL |
-| `contacts` | Visitante anônimo vira contato com `wa_identity = null`, nome "Visitante do site #N" e `metadata.webchat_visitor_id`. Se informar telefone, passa por `encontrarContatoPorTelefone` + `emitirTelefoneGanho` (a mesma fusão das redes sociais) | sem DDL |
+| `contacts` | O visitante informa o WhatsApp antes de conversar (§9.1): a ingestão casa por telefone com `encontrarContatoPorTelefone` e só cria ficha nova se não houver. `metadata.webchat_visitor_id` guarda o vínculo com o widget | sem DDL |
 | `messages.external_id` | `wc_<uuid>` gerado pelo servidor; `unique (organization_id, external_id)` dá a idempotência | sem DDL |
 
 Constraint nova **não** precisa de backfill: os dois CHECKs só ganham valores.
@@ -163,15 +163,72 @@ widget ◀──GET (polling)── rota pública ◀── messages (outbound) 
 | 1 | Tripla de schema (dois CHECKs) + `capabilities.ts` + `webchatAdapter` | `pnpm test:db` (install e update) + matriz de capabilities + `lint:channels` |
 | 2 | `ingest.ts` + as três rotas públicas + rate limit + hash do token | testes de unidade + invariante de isolamento (visitante da org A não lê a org B; token errado → 401) |
 | 3 | Tela Conexões › Chat do site + porta na navegação | spec Playwright pela tela (DoD 12), em ambiente fresco |
-| 4 | `chat.js` usando o canal quando houver `chave`, com o WhatsApp como reserva | spec Playwright: visitante pergunta → agente responde no widget (prova em par com a chamada direta) |
+| 4 | `chat.js` com formulário de WhatsApp + consentimento, usando o canal quando houver `chave` (o WhatsApp direto fica como reserva) + recuperação pelo WhatsApp (§9.2) | spec Playwright: visitante pergunta → agente responde no widget (prova em par com a chamada direta) |
 | 5 | Fragmento em `.changes/` (`capacidade_nova`) + docs | `pnpm release:conferir` |
 
-## 9. Decisões em aberto (do dono do produto)
+## 9. Decisões do dono do produto (24/10/2026)
 
-1. **Follow-up de visitante que saiu:** pelo WhatsApp, se ele deixou telefone, ou só no widget?
-2. **Pedir dados antes de conversar** (nome e telefone obrigatórios), ou deixar a IA pedir durante
-   a conversa?
-3. **Teto diário padrão** de conversas novas por organização.
+### 9.1 WhatsApp obrigatório antes do chat
+O widget abre com um formulário curto, **antes** da primeira mensagem:
+
+- **Nome** (opcional) e **WhatsApp** (obrigatório), validado e normalizado com `canonicalPhoneBR`;
+- **Consentimento explícito**, uma caixa desmarcada por padrão: *"Aceito receber contato da
+  {empresa} pelo WhatsApp sobre este atendimento"*. Sem a caixa marcada, o chat continua
+  funcionando, mas a recuperação da §9.2 **não** dispara.
+
+Com o telefone em mãos, o contato **não** nasce anônimo: a ingestão passa por
+`encontrarContatoPorTelefone` antes de criar ficha. Assim, quem já falou pelo WhatsApp é a **mesma
+pessoa** no site (um contato, duas conversas: `channel = 'site'` e `channel = 'whatsapp'`). Isso
+substitui o "visitante anônimo" da §3. O consentimento é gravado com o fluxo LGPD existente
+(`lgpd.consent_changed`, com origem `webchat`), não num campo solto.
+
+### 9.2 Recuperação pelo WhatsApp quando o visitante desiste
+Quando o visitante para de responder no site (ou fecha a aba no meio), a IA tenta reconquistá-lo
+**pelo WhatsApp**, para entender por que desistiu e conduzir à contratação.
+
+**Reuso, não motor novo:** o follow-up já tem o gatilho de silêncio (`lib/followup/silence-sweep.ts`),
+com cooldown, 1 fluxo vivo por contato (`idx_followup_enrollments_one_live`) e agente publicado como
+gate. O que falta é um ponto só: **o follow-up de uma conversa do site sai por outro canal.**
+- Novo `trigger_config.kind = 'site_abandonado'` (ou filtro `channel = 'site'` no gatilho de
+  silêncio, a decidir na fatia 4 medindo `trigger_config`).
+- O envio resolve a **conversa de WhatsApp do mesmo contato** (abrindo uma, se não houver, pelo
+  canal WhatsApp padrão da organização). A mensagem leva o contexto: *"Oi {nome}, vi que você estava
+  conversando com a gente no site sobre {assunto}…"*, com o resumo da conversa do site como memória
+  do agente.
+- **Só dispara com consentimento marcado** e telefone válido. Responder STOP encerra tudo
+  (`lib/opt-out/deteccao.ts`).
+
+**Física do WhatsApp (doutrina de restrição):**
+- **API oficial:** o primeiro contato está **fora da janela de 24h**, porque o visitante nunca
+  escreveu para aquele número. Exige **template aprovado** (`requiresTemplates`). A organização
+  precisa de um template de "retomada de atendimento" aprovado na Meta. Sem ele, o envio vira aviso
+  na Central, nunca falha muda.
+- **QR (WAHA):** pode enviar texto livre, mas com `banRisk`. Valem o throttle, a janela de disparo
+  e o warm-up. Mensagem para número que nunca falou com o aparelho é o padrão que mais causa
+  banimento. Por isso o padrão é **no máximo 2 tentativas**.
+
+**Padrão de tentativas (configurável por organização):**
+
+| Tentativa | Quando | Objetivo |
+|---|---|---|
+| 1 | 30 min depois do último silêncio no site | Retomar: "ficou alguma dúvida?" |
+| 2 | 24 h depois, se não respondeu | Entender a objeção e oferecer ajuda ou condição |
+| — | Depois disso | Para, sem 3ª tentativa automática. O lead fica no funil para a equipe decidir |
+
+Qualquer resposta do contato encerra a sequência e devolve a conversa ao agente normal.
+
+### 9.3 Teto diário (padrões recomendados)
+
+| Proteção | Padrão | Por quê |
+|---|---|---|
+| Conversas **novas** no site por empresa/dia | **100** | Cobre com folga um pequeno ou médio negócio. Um robô que passe disso só consegue criar 100 conversas |
+| Mensagens do visitante por conversa | **40** | Uma conversa real raramente passa de 20. Depois disso, oferece "continuar pelo WhatsApp" |
+| Mensagens por visitante | **10/min** | Ritmo humano |
+| Tentativas de recuperação por contato | **2** a cada **7 dias** | Evita spam e protege o número contra banimento |
+
+Os quatro são knobs em `channel_knobs`, com tela em Conexões › Chat do site. Estourar qualquer
+teto gera **aviso na Central** (laço de retorno), nunca um corte silencioso. Acima de todos fica o
+**teto de gasto de IA do plano** (`teto_ia_usd_cents`), que continua sendo o freio final.
 
 ## 10. O que esta spec NÃO mediu
 - Desempenho do polling com muitos visitantes simultâneos (nenhum teste de carga).
