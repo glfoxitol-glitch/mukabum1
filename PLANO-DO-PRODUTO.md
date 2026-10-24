@@ -117,7 +117,9 @@ Cliente no WhatsApp: "quero ver celulares até R$ 1.500"
   → lembrete no dia + pedido no funil para a equipe separar e entregar
 ```
 
-### IA: Jev (TypeSafe) + Claude Haiku 5.5
+### IA: Jev (TypeSafe) + IA de escrita (Claude Haiku 5.5 ou DeepSeek)
+Desenho técnico: `docs/specs/27-spec-jev-na-loja-e-assistente-de-configuracao.md`.
+
 O **Jev da TypeSafe já está embutido neste CRM** (`lib/ai/decisao/`, provedor `typesafe`). Ele
 responde três tipos de pergunta em milissegundos: **escolha** (uma opção de uma lista), **sim/não**
 e **nota**. Hoje ele já cuida de 9 tarefas: roteador (qual agente atende), clima da conversa,
