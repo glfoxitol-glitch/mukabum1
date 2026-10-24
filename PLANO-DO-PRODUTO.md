@@ -67,6 +67,8 @@ Assim a opção B vira uma evolução natural da A, sem jogar trabalho fora.
 - [ ] Rotina de entrega: a IA gera o `config.js` → revisão → publicação no Netlify ou na Vercel → domínio do cliente
 
 ### Fase 2: chat nativo no CRM
+Desenho técnico: `docs/specs/26-spec-webchat-nativo.md`.
+
 O chat deixa de levar ao WhatsApp e passa a conversar dentro do site, com a **IA do CRM respondendo ao vivo**, e a conversa aparece na inbox junto com as do WhatsApp.
 - [ ] Novo canal `webchat` no CRM (`lib/channels/`), seguindo o contrato `ChannelAdapter`
 - [ ] Endpoint público por empresa, com token do site, limite de requisições e proteção anti-spam
