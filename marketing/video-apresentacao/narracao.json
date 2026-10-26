@@ -1,0 +1,12 @@
+[
+  { "cena": 1, "inicio": 0.4, "fim": 7, "texto": "São quase meia-noite e o seu WhatsApp não para. Quantas vendas você perdeu hoje?" },
+  { "cena": 2, "inicio": 7.4, "fim": 16, "texto": "Um CRM é a memória organizada de todos os seus clientes: quem é cada um, o que pediu e qual o próximo passo." },
+  { "cena": 3, "inicio": 16.4, "fim": 24, "texto": "Com ele, nenhum cliente é esquecido, você vê quanto vai vender, e o negócio não depende só de você." },
+  { "cena": 4, "inicio": 24.4, "fim": 34, "texto": "E aqui, o CRM vem com inteligência artificial. Ela atende no WhatsApp, no Instagram e no site, de dia e de madrugada, em segundos." },
+  { "cena": 5, "inicio": 34.4, "fim": 45, "texto": "Você ainda ganha um site com a sua marca, ligado ao CRM. Quem começa no site continua no WhatsApp, sem repetir nada." },
+  { "cena": 6, "inicio": 45.4, "fim": 54, "texto": "A agenda só oferece horários livres. Dois clientes no mesmo horário? Nunca mais." },
+  { "cena": 7, "inicio": 54.4, "fim": 62, "texto": "Cada cliente anda pelo funil até a venda, e você acompanha tudo." },
+  { "cena": 8, "inicio": 62.4, "fim": 68, "texto": "Vendeu? O aviso chega no seu celular." },
+  { "cena": 9, "inicio": 68.4, "fim": 75, "texto": "Atendimento, vendas, agenda e site. Tudo num lugar só." },
+  { "cena": 10, "inicio": 75.6, "fim": 82, "texto": "Pare de perder vendas. Fale com a gente no WhatsApp." }
+]

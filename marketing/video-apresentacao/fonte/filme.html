@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>CRM + Site com IA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}
+body{width:1920px;height:1080px;overflow:hidden;background:#07131F;font-family:'Nunito Sans',Arial,sans-serif;color:#EEF3EE}
+#palco{position:relative;width:1920px;height:1080px;overflow:hidden;background:radial-gradient(1200px 800px at 75% 20%,#123152 0%,#0A1A2B 55%,#07131F 100%)}
+.grade{position:absolute;inset:0;background-image:linear-gradient(rgba(79,209,139,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(79,209,139,.06) 1px,transparent 1px);background-size:64px 64px;animation:deriva 82s linear both}
+@keyframes deriva{from{background-position:0 0}to{background-position:-320px -640px}}
+.sc{position:absolute;inset:0;opacity:0;animation-name:cena;animation-timing-function:linear;animation-fill-mode:both}
+@keyframes cena{0%{opacity:0}5%{opacity:1}95%{opacity:1}100%{opacity:0}}
+.leg{position:absolute;left:0;right:0;bottom:56px;text-align:center;font-size:40px;font-weight:700;color:#EEF3EE;opacity:0;animation-name:cena;animation-timing-function:linear;animation-fill-mode:both;text-shadow:0 2px 18px rgba(0,0,0,.6)}
+.leg b{color:#4FD18B}
+.eyebrow{font-size:28px;font-weight:800;letter-spacing:6px;text-transform:uppercase;color:#4FD18B}
+.titulo{font-family:'Rubik',Arial,sans-serif;font-weight:800;line-height:1.04;letter-spacing:-1px}
+.up{animation:up .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes up{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
+.pop{animation:pop .6s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+.esq{animation:esq .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes esq{from{opacity:0;transform:translateX(-80px)}to{opacity:1;transform:none}}
+.dir{animation:dir .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes dir{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:none}}
+.voa{animation:voa 1.2s cubic-bezier(.6,0,.2,1) both}
+@keyframes voa{from{transform:translate(var(--x),var(--y)) rotate(var(--r))}to{transform:none}}
+.risca{stroke-dasharray:1200;animation:risca 1.4s ease-out both}
+@keyframes risca{from{stroke-dashoffset:1200}to{stroke-dashoffset:0}}
+.treme{animation:treme .5s ease-in-out both}
+@keyframes treme{0%,100%{transform:none}20%{transform:translateX(-14px)}40%{transform:translateX(14px)}60%{transform:translateX(-10px)}80%{transform:translateX(10px)}}
+.some{animation:some .5s ease both}
+@keyframes some{to{opacity:0;transform:scale(.9)}}
+.pulsa{animation:pulsa 1.6s ease-in-out infinite}
+@keyframes pulsa{0%,100%{box-shadow:0 0 0 0 rgba(79,209,139,.55)}50%{box-shadow:0 0 0 28px rgba(79,209,139,0)}}
+.gira{animation:gira 14s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.contragira{animation:contragira 14s linear infinite}
+@keyframes contragira{to{transform:rotate(-360deg)}}
+.dots span{display:inline-block;width:14px;height:14px;border-radius:50%;background:#8FA3B5;margin:0 4px;animation:pula 1s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes pula{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-8px);opacity:1}}
+.celular{position:absolute;width:420px;height:860px;border-radius:64px;background:#0B1B2C;border:10px solid #1D3A59;box-shadow:0 60px 120px rgba(0,0,0,.55),inset 0 0 0 2px #2C5378;overflow:hidden}
+.balao{border-radius:22px;padding:14px 22px;font-size:24px;line-height:1.32;max-width:310px}
+.card{background:#10263D;border:1px solid #23466A;border-radius:22px}
+.claro{background:#F4F6F1;color:#10233A}
+.chip{display:flex;align-items:center;gap:18px;padding:30px 36px;border-radius:24px;background:#10263D;border:1px solid #23466A}
+.num{font-family:'Rubik',Arial,sans-serif;font-weight:800;color:#4FD18B}
+.conta{counter-reset:n var(--n);animation:conta 2s steps(30) both}
+.tag{display:inline-block;font-size:20px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#F2A65A;border:2px solid #F2A65A;border-radius:999px;padding:6px 16px}
+</style>
+</head>
+<body>
+<div id="palco">
+<div class="grade"></div>
+
+<!-- CENA 1 — o problema (0 a 7 s) -->
+<div class="sc" style="animation-delay:0s;animation-duration:7s">
+  <div class="celular" style="left:250px;top:110px">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#123152,#0B1B2C)"></div>
+    <p style="position:absolute;top:70px;left:0;right:0;text-align:center;font-family:Rubik;font-size:96px;font-weight:700">23:47</p>
+    <p style="position:absolute;top:190px;left:0;right:0;text-align:center;font-size:26px;color:#8FA3B5">quinta-feira</p>
+    <div class="pop card" style="position:absolute;left:24px;right:24px;top:290px;padding:20px 24px;animation-delay:.6s"><p style="font-size:22px;color:#8FA3B5">WhatsApp</p><p style="font-size:26px;font-weight:700">Oi, ainda tem disponível?</p></div>
+    <div class="pop card" style="position:absolute;left:24px;right:24px;top:410px;padding:20px 24px;animation-delay:1.2s"><p style="font-size:22px;color:#8FA3B5">WhatsApp</p><p style="font-size:26px;font-weight:700">Qual o preço?</p></div>
+    <div class="pop card" style="position:absolute;left:24px;right:24px;top:530px;padding:20px 24px;animation-delay:1.8s"><p style="font-size:22px;color:#8FA3B5">Instagram</p><p style="font-size:26px;font-weight:700">Vocês entregam hoje?</p></div>
+    <div class="pop card" style="position:absolute;left:24px;right:24px;top:650px;padding:20px 24px;animation-delay:2.4s"><p style="font-size:22px;color:#8FA3B5">WhatsApp</p><p style="font-size:26px;font-weight:700">Alguém aí?</p></div>
+    <div class="pop" style="position:absolute;right:20px;top:250px;width:92px;height:92px;border-radius:50%;background:#E5484D;display:flex;align-items:center;justify-content:center;font-family:Rubik;font-size:40px;font-weight:800;animation-delay:2.9s">12</div>
+  </div>
+  <div style="position:absolute;left:840px;top:300px;width:900px">
+    <p class="eyebrow up" style="color:#F2A65A;animation-delay:.4s">Enquanto você dorme</p>
+    <h1 class="titulo up" style="font-size:112px;margin-top:24px;animation-delay:1s">Quantas vendas você perdeu hoje?</h1>
+    <p class="up" style="font-size:40px;color:#BFD0DB;margin-top:36px;animation-delay:3.4s">Cliente que espera resposta compra no concorrente.</p>
+  </div>
+</div>
+<p class="leg" style="animation-delay:0s;animation-duration:7s">Mensagem sem resposta é <b>venda perdida</b>.</p>
+
+<!-- CENA 2 — o que é CRM (7 a 16 s) -->
+<div class="sc" style="animation-delay:7s;animation-duration:9s">
+  <div style="position:absolute;left:128px;top:96px">
+    <p class="eyebrow up" style="animation-delay:7.3s">O que é um CRM?</p>
+    <h2 class="titulo up" style="font-size:84px;margin-top:18px;animation-delay:7.6s">A memória organizada<br>de todos os seus clientes</h2>
+  </div>
+  <div style="position:absolute;left:128px;right:128px;top:420px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px">
+    <div class="up" style="animation-delay:8.6s"><p style="font-size:28px;font-weight:800;color:#8FA3B5;margin-bottom:16px">NOVO</p></div>
+    <div class="up" style="animation-delay:8.7s"><p style="font-size:28px;font-weight:800;color:#8FA3B5;margin-bottom:16px">CONVERSANDO</p></div>
+    <div class="up" style="animation-delay:8.8s"><p style="font-size:28px;font-weight:800;color:#8FA3B5;margin-bottom:16px">PROPOSTA</p></div>
+    <div class="up" style="animation-delay:8.9s"><p style="font-size:28px;font-weight:800;color:#4FD18B;margin-bottom:16px">VENDIDO</p></div>
+  </div>
+  <div style="position:absolute;left:128px;right:128px;top:480px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="voa card" style="padding:22px;--x:600px;--y:-340px;--r:-24deg;animation-delay:9.6s"><p style="font-size:28px;font-weight:800">Ana Souza</p><p style="font-size:22px;color:#8FA3B5">perguntou o preço · 23:47</p></div>
+      <div class="voa card" style="padding:22px;--x:1100px;--y:-120px;--r:18deg;animation-delay:9.8s"><p style="font-size:28px;font-weight:800">Carlos Lima</p><p style="font-size:22px;color:#8FA3B5">veio pelo site</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="voa card" style="padding:22px;--x:-300px;--y:-300px;--r:30deg;animation-delay:10s"><p style="font-size:28px;font-weight:800">Júlia Prado</p><p style="font-size:22px;color:#8FA3B5">quer agendar sábado</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="voa card" style="padding:22px;--x:-700px;--y:120px;--r:-16deg;animation-delay:10.2s"><p style="font-size:28px;font-weight:800">Marcos Reis</p><p style="font-size:22px;color:#8FA3B5">orçamento enviado</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="voa card" style="padding:22px;border-color:#4FD18B;--x:-1100px;--y:-260px;--r:22deg;animation-delay:10.4s"><p style="font-size:28px;font-weight:800">Paula Dias</p><p style="font-size:22px;color:#4FD18B">compra concluída</p></div>
+    </div>
+  </div>
+  <div class="pop" style="position:absolute;right:128px;top:120px;width:520px;padding:28px 32px;border-radius:24px;background:#1FB46A;color:#07131F;animation-delay:12s">
+    <p style="font-size:30px;font-weight:800;line-height:1.35">Quem é cada cliente, o que pediu, o que comprou e qual o próximo passo.</p>
+  </div>
+</div>
+<p class="leg" style="animation-delay:7s;animation-duration:9s">CRM = <b>Gestão do Relacionamento com o Cliente</b>. Nada mais se perde.</p>
+
+<!-- CENA 3 — por que ter (16 a 24 s) -->
+<div class="sc" style="animation-delay:16s;animation-duration:8s">
+  <div style="position:absolute;left:128px;top:110px">
+    <p class="eyebrow up" style="animation-delay:16.3s">Por que você precisa</p>
+    <h2 class="titulo up" style="font-size:96px;margin-top:18px;animation-delay:16.6s">Quem organiza os clientes vende mais</h2>
+  </div>
+  <div style="position:absolute;left:128px;right:128px;top:470px;display:grid;grid-template-columns:repeat(2,1fr);gap:32px">
+    <div class="chip pop" style="animation-delay:17.4s"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4FD18B" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7M17 11l2 2 4-4"/></svg><div><p style="font-family:Rubik;font-size:40px;font-weight:700">Nenhum cliente esquecido</p><p style="font-size:28px;color:#BFD0DB">Quem sumiu recebe retorno no tempo certo</p></div></div>
+    <div class="chip pop" style="animation-delay:18s"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4FD18B" stroke-width="2" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16V4"/></svg><div><p style="font-family:Rubik;font-size:40px;font-weight:700">Você vê onde está o dinheiro</p><p style="font-size:28px;color:#BFD0DB">Quantos negociam e quanto vai entrar</p></div></div>
+    <div class="chip pop" style="animation-delay:18.6s"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4FD18B" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><div><p style="font-family:Rubik;font-size:40px;font-weight:700">Atendimento mais rápido</p><p style="font-size:28px;color:#BFD0DB">O histórico de cada cliente na tela</p></div></div>
+    <div class="chip pop" style="animation-delay:19.2s"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4FD18B" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg><div><p style="font-family:Rubik;font-size:40px;font-weight:700">Não depende só de você</p><p style="font-size:28px;color:#BFD0DB">A equipe continua de onde parou</p></div></div>
+  </div>
+</div>
+<p class="leg" style="animation-delay:16s;animation-duration:8s">E aqui, o CRM vem com <b>inteligência artificial</b> trabalhando por você.</p>
+
+<!-- CENA 4 — IA no WhatsApp (24 a 34 s) -->
+<div class="sc" style="animation-delay:24s;animation-duration:10s">
+  <div style="position:absolute;left:128px;top:250px;width:760px">
+    <p class="eyebrow up" style="animation-delay:24.3s">Atendimento com IA 24h</p>
+    <h2 class="titulo up" style="font-size:88px;margin-top:18px;animation-delay:24.6s">Responde na hora, de dia e de madrugada</h2>
+    <div class="up" style="display:flex;gap:16px;margin-top:40px;flex-wrap:wrap;animation-delay:25.4s">
+      <span class="card" style="padding:14px 24px;font-size:26px;font-weight:700">WhatsApp</span>
+      <span class="card" style="padding:14px 24px;font-size:26px;font-weight:700">Instagram</span>
+      <span class="card" style="padding:14px 24px;font-size:26px;font-weight:700">Facebook</span>
+      <span class="card" style="padding:14px 24px;font-size:26px;font-weight:700">Site</span>
+    </div>
+  </div>
+  <div class="celular dir" style="left:1120px;top:110px;animation-delay:24.4s">
+    <div style="position:absolute;inset:0;background:#0F2236"></div>
+    <div style="position:absolute;left:0;right:0;top:0;height:120px;background:#173A5C;display:flex;align-items:center;gap:16px;padding:34px 28px 0">
+      <div style="width:56px;height:56px;border-radius:50%;background:#1FB46A"></div>
+      <div><p style="font-size:26px;font-weight:800">Sua Loja</p><p style="font-size:20px;color:#4FD18B">online agora</p></div>
+    </div>
+    <div style="position:absolute;left:24px;right:24px;top:140px;display:flex;flex-direction:column;gap:12px">
+      <p class="balao up" style="align-self:flex-end;background:#1E6B47;animation-delay:25.6s">Oi! Tem esse tênis no 40?</p>
+      <div style="align-self:flex-start;background:#173A5C;border-radius:24px;padding:20px 22px;overflow:hidden;animation:up .6s cubic-bezier(.2,.8,.2,1) 26.4s both, recolhe .4s ease 27.8s forwards"><div class="dots"><span></span><span></span><span></span></div></div>
+      <div class="up" style="align-self:flex-start;display:flex;flex-direction:column;gap:12px;animation-delay:28s">
+        <p class="balao" style="background:#173A5C">Tem sim! 3 pares no 40, por R$ 249,90</p>
+        <div style="width:300px;border-radius:20px;overflow:hidden;background:#173A5C">
+          <div style="height:96px;background:linear-gradient(135deg,#2A6F9E,#1FB46A)"></div>
+          <p style="padding:10px 18px;font-size:22px;font-weight:800">Tênis Corrida · tam. 40</p>
+        </div>
+      </div>
+      <p class="balao up" style="align-self:flex-end;background:#1E6B47;animation-delay:30s">Quero! Entrega hoje?</p>
+      <p class="balao up" style="align-self:flex-start;background:#173A5C;animation-delay:31.2s">Tenho às 14h ou 16h. Qual prefere?</p>
+    </div>
+  </div>
+  <div class="pop" style="position:absolute;left:128px;top:760px;padding:18px 28px;border-radius:999px;background:#1FB46A;color:#07131F;font-size:28px;font-weight:800;animation-delay:28.6s">Respondeu em 3 segundos</div>
+</div>
+<p class="leg" style="animation-delay:24s;animation-duration:10s">A IA conhece <b>preços e estoque</b> e chama uma pessoa quando precisa. <span style="color:#8FA3B5">(ilustrativo)</span></p>
+
+<!-- CENA 5 — site sincronizado (34 a 45 s) -->
+<div class="sc" style="animation-delay:34s;animation-duration:11s">
+  <div style="position:absolute;left:128px;top:80px">
+    <p class="eyebrow up" style="animation-delay:34.3s">Site incluso, sincronizado</p>
+    <h2 class="titulo up" style="font-size:80px;margin-top:14px;animation-delay:34.6s">Seu site e seu CRM falando a mesma língua</h2>
+  </div>
+  <div class="esq" style="position:absolute;left:128px;top:330px;width:820px;height:560px;border-radius:24px;background:#F4F6F1;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.5);animation-delay:35.2s">
+    <div style="height:56px;background:#DDE3DE;display:flex;align-items:center;gap:10px;padding:0 20px"><span style="width:16px;height:16px;border-radius:50%;background:#E5484D"></span><span style="width:16px;height:16px;border-radius:50%;background:#F2A65A"></span><span style="width:16px;height:16px;border-radius:50%;background:#1FB46A"></span><span style="margin-left:20px;flex:1;height:30px;border-radius:999px;background:#F4F6F1;font-size:18px;color:#4A5568;display:flex;align-items:center;padding-left:18px">sualoja.com.br</span></div>
+    <div class="up" style="height:110px;background:#10233A;color:#F4F6F1;display:flex;align-items:center;justify-content:space-between;padding:0 36px;animation-delay:35.8s"><p style="font-family:Rubik;font-size:34px;font-weight:800">Sua Loja</p><p style="font-size:22px;padding:10px 20px;border-radius:999px;background:#1FB46A;color:#07131F;font-weight:800">Comprar no WhatsApp</p></div>
+    <div style="padding:28px 36px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      <div class="pop" style="animation-delay:36.4s"><div style="height:150px;border-radius:16px;background:linear-gradient(135deg,#2A6F9E,#1FB46A)"></div><p style="font-size:22px;font-weight:800;color:#10233A;margin-top:10px">Tênis Corrida</p><p style="font-size:22px;color:#17834D;font-weight:800">R$ 249,90</p></div>
+      <div class="pop" style="animation-delay:36.7s"><div style="height:150px;border-radius:16px;background:linear-gradient(135deg,#F2A65A,#E5484D)"></div><p style="font-size:22px;font-weight:800;color:#10233A;margin-top:10px">Mochila</p><p style="font-size:22px;color:#17834D;font-weight:800">R$ 159,90</p></div>
+      <div class="pop" style="animation-delay:37s"><div style="height:150px;border-radius:16px;background:linear-gradient(135deg,#7C5CFF,#2A6F9E)"></div><p style="font-size:22px;font-weight:800;color:#10233A;margin-top:10px">Relógio</p><p style="font-size:22px;color:#17834D;font-weight:800">R$ 399,90</p></div>
+    </div>
+    <div class="pop" style="position:absolute;right:24px;bottom:24px;width:300px;border-radius:20px;background:#10233A;color:#F4F6F1;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.35);animation-delay:38.2s">
+      <p style="font-size:20px;font-weight:800;color:#4FD18B">Chat do site</p>
+      <p style="font-size:20px;margin-top:8px;line-height:1.35">Olá! Posso te ajudar a escolher?</p>
+    </div>
+  </div>
+  <svg style="position:absolute;left:0;top:0" width="1920" height="1080" aria-hidden="true">
+    <path class="risca" d="M950 560 C1080 560 1100 500 1240 500" stroke="#4FD18B" stroke-width="6" fill="none" style="animation-delay:39s"/>
+    <path class="risca" d="M1560 500 C1640 500 1660 380 1700 330" stroke="#4FD18B" stroke-width="6" fill="none" style="animation-delay:40s"/>
+    <path class="risca" d="M1560 560 C1640 560 1660 700 1700 760" stroke="#4FD18B" stroke-width="6" fill="none" style="animation-delay:40.3s"/>
+  </svg>
+  <div class="pop pulsa" style="position:absolute;left:1240px;top:410px;width:320px;height:220px;border-radius:28px;background:#1FB46A;color:#07131F;display:flex;flex-direction:column;align-items:center;justify-content:center;animation-delay:39.4s">
+    <p style="font-family:Rubik;font-size:56px;font-weight:800">CRM</p><p style="font-size:24px;font-weight:800">com IA</p>
+  </div>
+  <div class="pop card" style="position:absolute;left:1640px;top:230px;width:200px;padding:20px;text-align:center;animation-delay:40.8s"><p style="font-size:26px;font-weight:800">WhatsApp</p><p style="font-size:20px;color:#8FA3B5">mesmo histórico</p></div>
+  <div class="pop card" style="position:absolute;left:1640px;top:740px;width:200px;padding:20px;text-align:center;animation-delay:41.1s"><p style="font-size:26px;font-weight:800">Catálogo</p><p style="font-size:20px;color:#8FA3B5">e agenda únicos</p></div>
+  <div class="up" style="position:absolute;left:1000px;top:900px;animation-delay:41.8s"><span class="tag">Sincronização completa em implantação</span></div>
+</div>
+<p class="leg" style="animation-delay:34s;animation-duration:11s">Quem começa no <b>site</b> continua no <b>WhatsApp</b>, e tudo fica no <b>CRM</b>.</p>
+
+<!-- CENA 6 — agenda (45 a 54 s) -->
+<div class="sc" style="animation-delay:45s;animation-duration:9s">
+  <div style="position:absolute;left:128px;top:250px;width:720px">
+    <p class="eyebrow up" style="animation-delay:45.3s">Agenda inteligente</p>
+    <h2 class="titulo up" style="font-size:88px;margin-top:18px;animation-delay:45.6s">Nunca mais dois clientes no mesmo horário</h2>
+    <p class="up" style="font-size:34px;color:#BFD0DB;margin-top:30px;line-height:1.4;animation-delay:46.4s">A IA só oferece horários livres. Lembrete automático e Google Agenda.</p>
+  </div>
+  <div class="dir card" style="position:absolute;left:980px;top:150px;width:800px;padding:36px;animation-delay:45.8s">
+    <p style="font-family:Rubik;font-size:40px;font-weight:700;margin-bottom:24px">Sábado</p>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;padding:22px 28px;border-radius:16px;background:#0B1B2C"><p style="font-size:32px;font-weight:800">09:00</p><p style="font-size:28px;color:#8FA3B5">Ocupado</p></div>
+      <div style="position:relative;display:flex;justify-content:space-between;padding:22px 28px;border-radius:16px;background:#0B1B2C;border:2px solid #4FD18B">
+        <p style="font-size:32px;font-weight:800">10:00</p>
+        <p class="up" style="font-size:28px;color:#4FD18B;font-weight:800;animation-delay:47.4s">Ana · reservado</p>
+      </div>
+      <div class="treme" style="display:flex;justify-content:space-between;padding:22px 28px;border-radius:16px;background:#3A1C22;border:2px solid #E5484D;animation-delay:49.2s;opacity:0;animation-name:aparecetreme;animation-duration:1.2s">
+        <p style="font-size:30px;font-weight:800">Carlos tenta 10:00</p><p style="font-size:28px;color:#FF8A8F;font-weight:800">já reservado</p>
+      </div>
+      <div class="pop" style="display:flex;justify-content:space-between;padding:22px 28px;border-radius:16px;background:#0B1B2C;border:2px solid #4FD18B;animation-delay:51s">
+        <p style="font-size:32px;font-weight:800">11:00</p><p style="font-size:28px;color:#4FD18B;font-weight:800">Carlos · reservado</p>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="leg" style="animation-delay:45s;animation-duration:9s">Horário ocupado <b>some da lista</b>, e a IA oferece o próximo livre.</p>
+
+<!-- CENA 7 — funil (54 a 62 s) -->
+<div class="sc" style="animation-delay:54s;animation-duration:8s">
+  <div style="position:absolute;left:128px;top:96px;right:128px;display:flex;justify-content:space-between;align-items:flex-end">
+    <div><p class="eyebrow up" style="animation-delay:54.3s">Funil de vendas</p><h2 class="titulo up" style="font-size:84px;margin-top:14px;animation-delay:54.6s">Cada cliente andando até a venda</h2></div>
+    <div class="pop card" style="padding:24px 36px;text-align:right;animation-delay:55.4s"><p style="font-size:24px;color:#8FA3B5;font-weight:800">VENDAS DO MÊS</p><p class="num" style="font-size:72px"><span class="up" style="display:inline-block;animation-delay:58.6s">R$ 12.480</span></p></div>
+  </div>
+  <div style="position:absolute;left:128px;right:128px;top:400px;height:460px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px">
+    <div class="card" style="padding:24px"><p style="font-size:24px;font-weight:800;color:#8FA3B5">NOVO</p></div>
+    <div class="card" style="padding:24px"><p style="font-size:24px;font-weight:800;color:#8FA3B5">CONVERSANDO</p></div>
+    <div class="card" style="padding:24px"><p style="font-size:24px;font-weight:800;color:#8FA3B5">PROPOSTA</p></div>
+    <div class="card" style="padding:24px;border-color:#4FD18B"><p style="font-size:24px;font-weight:800;color:#4FD18B">VENDIDO</p></div>
+  </div>
+  <div class="claro" style="position:absolute;left:152px;top:470px;width:340px;padding:20px 24px;border-radius:18px;animation:anda 3.6s cubic-bezier(.6,0,.2,1) 55.8s both"><p style="font-size:26px;font-weight:800">Ana Souza</p><p style="font-size:22px;color:#4A5568">Tênis Corrida</p></div>
+  <div class="claro" style="position:absolute;left:152px;top:600px;width:340px;padding:20px 24px;border-radius:18px;animation:anda2 2.8s cubic-bezier(.6,0,.2,1) 56.6s both"><p style="font-size:26px;font-weight:800">Júlia Prado</p><p style="font-size:22px;color:#4A5568">Corte + barba</p></div>
+  <div class="claro" style="position:absolute;left:152px;top:730px;width:340px;padding:20px 24px;border-radius:18px;animation:anda3 2s cubic-bezier(.6,0,.2,1) 57.4s both"><p style="font-size:26px;font-weight:800">Marcos Reis</p><p style="font-size:22px;color:#4A5568">Orçamento PDF</p></div>
+</div>
+<p class="leg" style="animation-delay:54s;animation-duration:8s">Funil, propostas em PDF, campanhas e metas: <b>tudo à vista</b>.</p>
+
+<!-- CENA 8 — notificação (62 a 68 s) -->
+<div class="sc" style="animation-delay:62s;animation-duration:6s">
+  <div class="celular" style="left:750px;top:110px">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#123152,#0B1B2C)"></div>
+    <p style="position:absolute;top:80px;left:0;right:0;text-align:center;font-family:Rubik;font-size:96px;font-weight:700">14:02</p>
+    <div style="position:absolute;left:22px;right:22px;top:300px;padding:22px;border-radius:24px;background:#F4F6F1;color:#10233A;animation:cai .9s cubic-bezier(.3,1.4,.5,1) 62.8s both">
+      <p style="font-size:20px;font-weight:800;color:#17834D">CRM · agora</p>
+      <p style="font-size:28px;font-weight:800;margin-top:6px">Venda ganha: R$ 249,90</p>
+      <p style="font-size:22px;color:#4A5568;margin-top:4px">Ana · entrega hoje 14h–16h</p>
+    </div>
+  </div>
+  <p class="titulo up" style="position:absolute;left:128px;top:380px;width:560px;font-size:76px;animation-delay:63.4s">Vendeu? Você fica sabendo.</p>
+  <p class="up" style="position:absolute;left:1260px;top:400px;width:540px;font-size:36px;color:#BFD0DB;line-height:1.4;animation-delay:64.2s">Roda na nuvem, 24 horas. Não precisa deixar o computador ligado.</p>
+</div>
+<p class="leg" style="animation-delay:62s;animation-duration:6s">Aviso no <b>celular</b> e no WhatsApp da equipe.</p>
+
+<!-- CENA 9 — tudo junto (68 a 75 s) -->
+<div class="sc" style="animation-delay:68s;animation-duration:7s">
+  <div class="pop pulsa" style="position:absolute;left:810px;top:390px;width:300px;height:300px;border-radius:50%;background:#1FB46A;color:#07131F;display:flex;flex-direction:column;align-items:center;justify-content:center;animation-delay:68.3s"><p style="font-family:Rubik;font-size:64px;font-weight:800">CRM</p><p style="font-size:26px;font-weight:800">com IA</p></div>
+  <div class="gira" style="position:absolute;left:560px;top:140px;width:800px;height:800px;border:2px dashed rgba(79,209,139,.35);border-radius:50%">
+    <div class="contragira card" style="position:absolute;left:330px;top:-40px;width:140px;height:80px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">WhatsApp</div>
+    <div class="contragira card" style="position:absolute;left:690px;top:200px;width:140px;height:80px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">Site</div>
+    <div class="contragira card" style="position:absolute;left:690px;top:520px;width:140px;height:80px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">Agenda</div>
+    <div class="contragira card" style="position:absolute;left:330px;top:760px;width:140px;height:80px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">Funil</div>
+    <div class="contragira card" style="position:absolute;left:-30px;top:520px;width:140px;height:80px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">Equipe</div>
+    <div class="contragira card" style="position:absolute;left:-30px;top:200px;width:140px;height:80px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">Instagram</div>
+  </div>
+  <div class="esq" style="position:absolute;left:128px;top:420px;width:400px;animation-delay:69s"><p class="titulo" style="font-size:64px">Tudo num lugar só.</p></div>
+  <div class="dir" style="position:absolute;left:1440px;top:400px;width:380px;font-size:30px;line-height:1.6;color:#BFD0DB;animation-delay:69.6s"><p>LGPD de fábrica</p><p>Cada empresa isolada</p><p>WhatsApp oficial</p><p>Para loja, barbearia, restaurante e serviços</p></div>
+</div>
+<p class="leg" style="animation-delay:68s;animation-duration:7s">Atendimento, vendas, agenda e site, <b>sincronizados</b>.</p>
+
+<!-- CENA 10 — chamada final (75 a 82 s) -->
+<div class="sc" style="animation-delay:75s;animation-duration:7s;background:radial-gradient(900px 600px at 50% 45%,#1FB46A 0%,#0F7A47 45%,#07131F 100%)">
+  <div style="position:absolute;left:0;right:0;top:260px;text-align:center">
+    <p class="eyebrow up" style="color:#07131F;animation-delay:75.4s">CRM + Site com IA</p>
+    <h2 class="titulo up" style="font-size:132px;color:#F4F6F1;margin-top:20px;animation-delay:75.8s">Pare de perder vendas.</h2>
+    <p class="up" style="font-size:44px;color:#EEF3EE;margin-top:30px;animation-delay:76.8s">Veja a IA atendendo os seus clientes.</p>
+    <p class="pop" style="display:inline-block;margin-top:50px;padding:26px 56px;border-radius:999px;background:#07131F;color:#F4F6F1;font-size:40px;font-weight:800;animation-delay:77.8s">Fale com a gente no WhatsApp</p>
+  </div>
+</div>
+</div>
+<style>
+@keyframes aparecetreme{0%{opacity:0;transform:translateY(30px)}25%{opacity:1;transform:none}40%{transform:translateX(-14px)}55%{transform:translateX(14px)}70%{transform:translateX(-10px)}85%{transform:translateX(10px)}100%{opacity:1;transform:none}}
+@keyframes anda{0%{transform:none}30%{transform:translateX(424px)}60%{transform:translateX(848px)}100%{transform:translateX(1272px)}}
+@keyframes anda2{0%{transform:none}50%{transform:translateX(424px)}100%{transform:translateX(848px)}}
+@keyframes anda3{from{transform:none}to{transform:translateX(424px)}}
+@keyframes recolhe{to{opacity:0;height:0;padding-top:0;padding-bottom:0;margin-bottom:-12px}}
+@keyframes cai{from{opacity:0;transform:translateY(-120px)}to{opacity:1;transform:none}}
+</style>
+</body>
+</html>
